@@ -1,0 +1,10 @@
+clouds:
+  devstack:
+    region_name: RegionOne
+    auth:
+      user_domain_name: default
+      project_domain_name: default
+      username: 'admin'
+      password: 'Welcome123'
+      project_name: 'admin'
+      auth_url: 'http://172.16.4.200:5000/v3/'

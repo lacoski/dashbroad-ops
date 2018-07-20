@@ -1,0 +1,27 @@
+.sizeFolder{ 
+    font-size:25px; 
+}
+.fa-c-directory {
+    color: sienna;
+}
+.fa-c-txt {
+    color: silver;
+}
+.fa-c-img {
+    color:rgb(255, 166, 0);
+}
+.fa-c-pdf {
+    color: violet;
+}
+.fa-c-zip {
+    color:tan;
+}
+.fa-c-mp3 {
+    color:thistle;
+}
+.fa-c-video {
+    color:slateblue;
+}
+
+  
+
