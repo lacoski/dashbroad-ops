@@ -97,26 +97,26 @@
                 <ul class="sidebar-menu" data-widget="tree">
                     <li class="header">Quản trị</li>
                     <li>
-                        <a href="#">
-                            <i class="fa fa-folder"></i>
+                        <a href="{% url 'server_list' %}">
+                            <i class="fa fa-server"></i>
                             <span>Quản trị VM</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#">
-                            <i class="fa fa-trash"></i>
+                        <a href="{% url 'image_list' %}">
+                            <i class="fa fa-circle-o"></i>
                             <span>Quản trị Image</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#">
-                            <i class="fa fa-share-alt"></i>
+                        <a href="{% url 'flavor_list' %}">
+                            <i class="fa fa-file"></i>
                             <span>Quản trị Flavor</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#">
-                            <i class="fa fa-share"></i>
+                        <a href="{% url 'network_list' %}">
+                            <i class="fa fa-random"></i>
                             <span>Quản trị network</span>
                         </a>
                     </li>

@@ -1,6 +1,11 @@
 import openstack
 import os
-from objects import object_images
+from objects import (
+    object_flavors,
+    object_images,
+    object_networks,
+    object_servers
+)
 
 
 def create_connection(auth_url, region, project_name, username, password):
@@ -30,17 +35,17 @@ class opsbase(object):
         print("List Images:")
         list_images = []
         for image in self.conn.image.images():
-            temp_obj = object_images(
-                s_Name = image.name,
-                s_Status = image.status,
-                s_Visibility = image.visibility,
-                s_Disk_Format = image.disk_format,
-                s_Size = image.size,
-            )
+            # temp_obj = object_images(
+            #     s_Name = image.name,
+            #     s_Status = image.status,
+            #     s_Visibility = image.visibility,
+            #     s_Disk_Format = image.disk_format,
+            #     s_Size = image.size,
+            # )
             #print(image)
-            list_images.append(temp_obj)
-        return list_images
-            
+            list_images.append(image)
+        print(type(self.conn.image.images()))
+        return list_images            
 
     def image_upload_image(self, name = 'imageSDK', path = '', disk_format = 'qcow2', container_format = 'bare', visibility = 'public'):
         print("Upload Image:")
@@ -74,17 +79,36 @@ class opsbase(object):
         target_image = self.conn.image.find_image(name_image)
         self.conn.image.delete_image(target_image, ignore_missing=False)
 
+    def image_find_image(self, name_id):
+        image = self.conn.compute.find_image(name_id)
+        return image
+
+# network 
     def network_list_networks(self):
         print("List Networks:")
-        for network in self.conn.network.networks():
-            print(network)
-            print(network.id)
+        list_network = []
+        for network in self.conn.network.networks():            
+            temp_obj = object_networks(
+                s_Name = network.name, 
+                s_Shared = network.is_shared,
+                s_Status = network.status,
+                s_Admin_State = network.is_admin_state_up,
+                s_Availability_Zones = network.availability_zones,
+                s_Id = network.id
+            )
+            list_network.append(temp_obj)                
+        return list_network
 
-
+# compute
     def compute_list_servers(self):
         print("List Servers:")
-        for server in self.conn.compute.servers():
-            print(server)
+        list_servers = []
+        for server in self.conn.compute.servers():            
+            server.image['name_image'] = self.image_find_image(server.image['id']).name
+            server.flavor['name_flavor'] = self.compute_find_flavor(server.flavor['id']).name
+            #print(server.flavor)
+            list_servers.append(server)
+        return list_servers
 
     def compute_create_vm(self, name_vm = '', name_image = 'cirros', name_flavor = 'm1.small', name_network = 'provider'):
         print("Create Server:")
@@ -109,12 +133,32 @@ class opsbase(object):
         name_server = name
         server = self.conn.compute.find_server(name_server)
         print(server)
-        self.conn.compute.delete_server(server)
+        self.conn.compute.delete_server(server)   
 
+    def compute_get_console_server(self, name_id = ''):
+        print(self.conn.get_server_console('164c70ac-1097-487b-98fd-769db1470835'))
+
+    def compute_shutdown_server(self, name_id = ''):
+        #openstack.compute.v2._proxy.Proxy.stop_server('164c70ac-1097-487b-98fd-769db1470835')
+        self.conn.compute.stop_server('164c70ac-1097-487b-98fd-769db1470835')
+
+# compute flavor
     def compute_list_flavors(self,):
         print("List Flavors:")
         list_flavors = []
         for flavor in self.conn.compute.flavors():
-            list_flavors.append(flavor)
-
+            temp_obj = object_flavors(
+                s_Name = flavor.name, 
+                s_Vcpus = flavor.vcpus,
+                s_Ram = flavor.ram,
+                s_Disk = flavor.disk,
+                s_Is_public = flavor.is_public,
+                s_Id = flavor.id
+            )
+            list_flavors.append(temp_obj)
         return list_flavors
+
+    def compute_find_flavor(self, name_id):
+        print("Find Flavor:")
+        flavor = self.conn.compute.find_flavor(name_id)
+        return flavor

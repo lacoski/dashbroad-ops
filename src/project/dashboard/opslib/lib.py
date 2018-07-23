@@ -1,6 +1,10 @@
 import openstack
 import os
-from .objects import object_images
+from .objects import (
+    object_images,
+    object_flavors,
+    object_networks
+)
 
 class opsbase(object):    
     conn = None
@@ -15,23 +19,14 @@ class opsbase(object):
             project_domain_name='default'
         )
 
-# image function            
+# image service
     def image_list_images(self):
         print("List Images:")
-        list_images = []
-        for image in self.conn.image.images():
-            temp_obj = object_images(
-                s_Name = image.name,
-                s_Status = image.status,
-                s_Visibility = image.visibility,
-                s_Disk_Format = image.disk_format,
-                s_Size = image.size,
-            )
-            #print(image)
-            list_images.append(temp_obj)
-        return list_images
+        # list_images = []
+        # for image in self.conn.image.images():
+        #     list_images.append(image)
+        return self.conn.image.images()
             
-
     def image_upload_image(self, name = 'imageSDK', path = '', disk_format = 'qcow2', container_format = 'bare', visibility = 'public'):
         print("Upload Image:")
         data_path_image = path
@@ -64,12 +59,15 @@ class opsbase(object):
         target_image = conn.image.find_image(name_image)
         self.conn.image.delete_image(target_image, ignore_missing=False)
 
+    def image_find_image(self, name_id):
+        image = self.conn.compute.find_image(name_id)
+        return image
+# network 
     def network_list_networks(self):
-        print("List Networks:")
-        for network in self.conn.network.networks():
-            print(network)
-            print(network.id)
+        print("List Networks:")                  
+        return self.conn.network.networks()
 
+# compute server
     def compute_create_vm(self, name_vm = '', name_image = 'cirros', name_flavor = 'm1.small', name_network = 'provider'):
         print("Create Server:")
 
@@ -95,3 +93,21 @@ class opsbase(object):
         print(server)
         self.conn.compute.delete_server(server)
 
+    def compute_list_servers(self):
+        print("List Servers:")
+        list_servers = []
+        for server in self.conn.compute.servers():            
+            server.image['name_image'] = self.image_find_image(server.image['id']).name
+            server.flavor['name_flavor'] = self.compute_find_flavor(server.flavor['id']).name
+            list_servers.append(server)
+        return list_servers
+        
+# compute flavor
+    def compute_list_flavors(self,):
+        print("List Flavors:")
+        return self.conn.compute.flavors()
+
+    def compute_find_flavor(self, name_id):
+        print("Find Flavor:")
+        flavor = self.conn.compute.find_flavor(name_id)
+        return flavor

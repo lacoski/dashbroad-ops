@@ -1,7 +1,7 @@
 {% extends 'dashboard/base.html' %} {% block headercontent %}
 <section class="content-header">
     <h1>
-        Danh sách Server
+        Danh sách Network
         <small>it all starts here</small>
     </h1>
     <ol class="breadcrumb">
@@ -43,18 +43,20 @@
                     <tr>
                         <th>Id</th>
                         <th>Tên</th>
+                        <th>Shared</th>
                         <th>Status</th>
-                        <th>Image name</th>
-                        <th>Flavor name</th>                        	                        	                                                                
+                        <th>Admin State</th>
+                        <th>Availability Zones</th>                        	                        	                                                                
                         <th>Action</th>
                     </tr>
-                    {% for obj in servers %}
+                    {% for obj in networks %}
                         <tr>
                             <td>{{obj.id}}</td>
                             <td>{{obj.name}}</td>
+                            <td>{{obj.is_shared}}</td>
                             <td>{{obj.status}}</td>
-                            <td>{{obj.image.name_image}}</td>
-                            <td>{{obj.flavor.name_flavor}}</td>
+                            <td>{{obj.is_admin_state_up}}</td>
+                            <td>{{obj.availability_zones}}</td>
                             <td>
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-success">Thao tác</button>
@@ -64,10 +66,6 @@
                                     </button>
                                     <ul class="dropdown-menu" role="menu">                                    
                                         <li>
-                                            <a href="#">Get console</a>
-                                            <a href="#">Console</a>
-                                            <a href="#">Bật</a>
-                                            <a href="#">Tắt</a>                                            
                                             <a href="#">Xóa</a>
                                         </li>
                                     </ul>

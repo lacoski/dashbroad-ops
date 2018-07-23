@@ -11,10 +11,7 @@ def main():
     #     obj.show_image()
     #api.create_vm('demolib')  
     #api.delete_server('demolib')
-    list_test = api.compute_list_flavors()
-    for obj in list_test:
-        print(obj.id)
-    
-
+    test = api.compute_shutdown_server()
+        
 if __name__ == '__main__':
     main()  
