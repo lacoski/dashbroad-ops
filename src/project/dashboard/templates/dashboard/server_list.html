@@ -12,15 +12,25 @@
         <li class="active">Blank</li>
     </ol>
 </section>
-{% endblock %}
+{% endblock %} {% block maincontent %}
 
-{% block maincontent %}
 <section class="content">
+    {% if messages %}
+        <div class="alert alert-info alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h4>
+                <i class="icon fa fa-info"></i> Thông báo</h4>
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <div class="box">
         <div class="box-header">
             <h3 class="box-title">
                 <div class="margin">
-                    <button type="button" class="btn btn-primary">Tạo mới</button>
+                    <a type="button" class="btn btn-primary" href="{% url 'server_create' %}">Tạo mới</a>
                 </div>
             </h3>
 
@@ -44,38 +54,40 @@
                         <th>Id</th>
                         <th>Tên</th>
                         <th>Status</th>
+                        <th>Task State</th>
                         <th>Image name</th>
-                        <th>Flavor name</th>                        	                        	                                                                
+                        <th>Flavor name</th>
                         <th>Action</th>
                     </tr>
                     {% for obj in servers %}
-                        <tr>
-                            <td>{{obj.id}}</td>
-                            <td>{{obj.name}}</td>
-                            <td>{{obj.status}}</td>
-                            <td>{{obj.image.name_image}}</td>
-                            <td>{{obj.flavor.name_flavor}}</td>
-                            <td>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-success">Thao tác</button>
-                                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                                        <span class="caret"></span>
-                                        <span class="sr-only">Toggle Dropdown</span>
-                                    </button>
-                                    <ul class="dropdown-menu" role="menu">                                    
-                                        <li>
-                                            <a href="#">Get console</a>
-                                            <a href="#">Console</a>
-                                            <a href="#">Bật</a>
-                                            <a href="#">Tắt</a>                                            
-                                            <a href="#">Xóa</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>{{obj.id}}</td>
+                        <td>{{obj.name}}</td>
+                        <td>{{obj.status}}</td>
+                        <td>{{obj.task_state}}</td>
+                        <td>{{obj.image.name_image}}</td>
+                        <td>{{obj.flavor.name_flavor}}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-success">Thao tác</button>
+                                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li>
+                                        <a href="{% url 'server_get_console' %}{{obj.id}}/{{obj.name}}">Get console</a>
+                                        <a href="#">Console</a>
+                                        <a href="{% url 'server_startup' %}{{obj.id}}/{{obj.name}}">Bật</a>
+                                        <a href="{% url 'server_shutdown' %}{{obj.id}}/{{obj.name}}">Tắt</a>
+                                        <a href="{% url 'server_delete' %}{{obj.id}}/{{obj.name}}">Xóa</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
                     {% endfor %}
-                                        
+
                 </tbody>
             </table>
         </div>

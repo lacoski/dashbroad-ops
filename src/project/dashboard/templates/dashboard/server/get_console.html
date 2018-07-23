@@ -1,0 +1,39 @@
+{% extends 'dashboard/base.html' %} {% load static %} {% block ext-script %}
+<script src="{% static 'highlight/highlight.pack.js' %}"></script>
+<script>hljs.initHighlightingOnLoad();</script> {% endblock %} {% block headercontent %}
+<section class="content-header">
+    <h1>
+        Quản trị VM
+        <small>it all starts here</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="#">
+                <i class="fa fa-dashboard"></i> Home</a>
+        </li>
+        <li class="active">Blank</li>
+    </ol>
+</section>
+{% endblock %} {% block maincontent %}
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Console Server</h3>
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form role="form">
+            <div class="box-body">
+                <pre>
+                    <code class="Bash">{{ server_console }}</code>
+                </pre>
+            </div>
+            <!-- /.box-body -->
+
+            <div class="box-footer">
+                <a href="{% url 'server_list' %}" type="button" class="btn btn-primary">Hủy</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -14,11 +14,22 @@
 </section>
 {% endblock %} {% block maincontent %}
 <section class="content">
+    {% if messages %}
+    <div class="alert alert-info alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <h4>
+            <i class="icon fa fa-info"></i> Thông báo</h4>
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+    </div>
+    {% endif %}
+
     <div class="box">
         <div class="box-header">
             <h3 class="box-title">
                 <div class="margin">
-                    <button type="button" class="btn btn-primary">Tạo mới</button>
+                    <a href="{% url 'flavor_create' %}" type="button" class="btn btn-primary">Tạo mới</a>
                 </div>
             </h3>
 
@@ -42,7 +53,7 @@
                         <th>Id</th>
                         <th>Tên</th>
                         <th>Vcpus</th>
-                        <th>Ram</th>
+                        <th>Ram (MB)</th>
                         <th>Disk (GB)</th>
                         <th>State</th>
                         <th>Thao tác</th>
@@ -54,7 +65,7 @@
                         <td>{{obj.vcpus}}</td>
                         <td>{{obj.ram}}</td>
                         <td>{{obj.disk}}</td>
-                        <td>{{obj.is_public}}</td>                        
+                        <td>{{obj.is_public}}</td>
                         <td>
                             <div class="btn-group">
                                 <button type="button" class="btn btn-success">Thao tác</button>
@@ -64,7 +75,7 @@
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
                                     <li>
-                                        <a href="#">Xóa</a>
+                                        <a href="{% url 'flavor_delete' %}{{obj.id}}/{{obj.name}}">Xóa</a>
                                     </li>
                                 </ul>
                             </div>

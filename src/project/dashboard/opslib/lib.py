@@ -1,5 +1,7 @@
 import openstack
 import os
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from .objects import (
     object_images,
     object_flavors,
@@ -33,13 +35,13 @@ class opsbase(object):
         name_image = name
         disk_format_image = disk_format
         container_format_image = container_format
-        visibility_image = visibility
+        visibility_image = visibility        
         image_attrs = {
-            'name': 'imageSDKup',
-            'data': open('cirros.qcow2', 'rb'),
-            'disk_format': 'qcow2',
-            'container_format': 'bare',
-            'visibility': 'public',
+            'name': name,
+            'data': default_storage.open(path, 'rb'),
+            'disk_format': disk_format,
+            'container_format': container_format,
+            'visibility': visibility,
         }
         self.conn.image.upload_image(**image_attrs)
 
@@ -53,10 +55,9 @@ class opsbase(object):
             response = self.conn.image.download_image(image)
             local_image.write(response)
 
-    def image_delete_image(self, name):
+    def image_delete_image(self, name_id):
         print("Delete Image:")
-        name_image = name 
-        target_image = conn.image.find_image(name_image)
+        target_image = self.conn.image.find_image(name_id)
         self.conn.image.delete_image(target_image, ignore_missing=False)
 
     def image_find_image(self, name_id):
@@ -86,22 +87,39 @@ class opsbase(object):
 
         server = self.conn.compute.wait_for_server(server)
 
-    def compute_delete_server(self, name):
+    def compute_delete_server(self, name_id):
         print("Delete Server:")
-        name_server = name
-        server = self.conn.compute.find_server(name_server)
-        print(server)
+        server = self.conn.compute.find_server(name_id)
         self.conn.compute.delete_server(server)
 
     def compute_list_servers(self):
         print("List Servers:")
         list_servers = []
-        for server in self.conn.compute.servers():            
-            server.image['name_image'] = self.image_find_image(server.image['id']).name
-            server.flavor['name_flavor'] = self.compute_find_flavor(server.flavor['id']).name
+        for server in self.conn.compute.servers():
+            #print(server)
+            name_image = self.image_find_image(server.image['id'])
+            if name_image is None:
+                server.image['name_image'] = 'Image has deleted'
+            else:
+                server.image['name_image'] = name_image.name
+            
+            name_flavor = self.compute_find_flavor(server.flavor['id'])
+            if name_flavor is None:
+                server.flavor['name_flavor'] = 'Flavor has deleted'
+            else:
+                server.flavor['name_flavor'] = name_flavor.name
+
             list_servers.append(server)
         return list_servers
-        
+    
+    def compute_shutdown_server(self, name_id = ''):
+        self.conn.compute.stop_server(name_id)
+
+    def compute_startup_server(self, name_id = ''):
+        self.conn.compute.start_server(name_id)
+    
+    def compute_get_console_server(self, name_id = ''):
+        return self.conn.get_server_console(name_id)
 # compute flavor
     def compute_list_flavors(self,):
         print("List Flavors:")
@@ -110,4 +128,24 @@ class opsbase(object):
     def compute_find_flavor(self, name_id):
         print("Find Flavor:")
         flavor = self.conn.compute.find_flavor(name_id)
+        return flavor
+    
+    def compute_create_flavor(self, name , vcpu = '1', ram = '512', disk = '1'):
+        print("Create flavor:")
+
+        flavor_name = name
+        flavor_vcpu = vcpu
+        flavor_ram = ram
+        flavor_disk = disk
+      
+        server = self.conn.compute.create_flavor(
+            name = flavor_name, 
+            vcpus = flavor_vcpu, 
+            ram = flavor_ram, 
+            disk = flavor_disk
+        )
+
+    def compute_delete_flavor(self, name_id):
+        print("Delete Flavor:")
+        flavor = self.conn.compute.delete_flavor(name_id)
         return flavor

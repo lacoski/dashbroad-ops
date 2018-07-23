@@ -1,0 +1,55 @@
+{% extends 'dashboard/base.html' %} {% block headercontent %}
+<section class="content-header">
+    <h1>
+        Quản trị Image
+        <small>it all starts here</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="#">
+                <i class="fa fa-dashboard"></i> Home</a>
+        </li>
+        <li class="active">Blank</li>
+    </ol>
+</section>
+{% endblock %} {% block maincontent %}
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Upload Image</h3>
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form method="POST" role="form" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="box-body">
+                <div class="form-group">
+                    <label>Tên</label>
+                    <input type="text" class="form-control" id="name" name="name">
+                </div>
+                <div class="form-group">                   
+                    <label>Disk Format</label>
+                    <select id="disk_format" name="disk_format" class="form-control">
+                        {% for obj in formats %}
+                        <option value="{{obj}}">{{obj}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+               
+                <div class="form-group">
+                    <label for="uploadFromPC">File input</label>
+                    <input type="file" name="uploadFromPC">
+                    <p class="help-block">Chọn images</p>
+                </div>
+            </div>
+            <!-- /.box-body -->
+
+            <div class="box-footer">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a href="{% url 'image_list' %}" type="button" class="btn btn-primary">Hủy</a>
+
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

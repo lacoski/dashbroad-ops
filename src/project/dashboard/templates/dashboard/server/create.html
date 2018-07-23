@@ -1,0 +1,64 @@
+{% extends 'dashboard/base.html' %} {% block headercontent %}
+<section class="content-header">
+    <h1>
+        Quản trị VM
+        <small>it all starts here</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="#">
+                <i class="fa fa-dashboard"></i> Home</a>
+        </li>
+        <li class="active">Blank</li>
+    </ol>
+</section>
+{% endblock %} {% block maincontent %}
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Tạo mới Server</h3>
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form method="POST" role="form">
+            {% csrf_token %}
+            <div class="box-body">
+                <div class="form-group">
+                    <label>Tên Server</label>
+                    <input class="form-control" id='name' name='name' type="text">
+                </div>
+                <div class="form-group">
+                    <label>Image</label>
+                    <select id="image_id" name="image_id" class="form-control">
+                        {% for obj in images %}
+                        <option value="{{obj.id}}">{{obj.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Flavor</label>
+                    <select id="flavor_id" name="flavor_id" class="form-control">
+                        {% for obj in flavors %}
+                        <option value="{{obj.id}}">{{obj.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Network</label>
+                    <select id="network_id" name="network_id" class="form-control">
+                        {% for obj in networks %}
+                        <option value="{{obj.id}}">{{obj.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <!-- /.box-body -->
+
+            <div class="box-footer">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a href="{% url 'server_list' %}" type="button" class="btn btn-primary">Hủy</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

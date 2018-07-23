@@ -1,7 +1,7 @@
 {% extends 'dashboard/base.html' %} {% block headercontent %}
 <section class="content-header">
     <h1>
-        Tắt VM
+        Quản trị VM
         <small>it all starts here</small>
     </h1>
     <ol class="breadcrumb">
@@ -20,18 +20,26 @@
         </div>
         <!-- /.box-header -->
         <!-- form start -->
-        <form role="form">
+        <form method="POST" role="form" >
+            {% csrf_token %}
             <div class="box-body">
-                
-                <div class="form-group">                    
+                <div class="form-group">
+                    <label>ID Server</label>
+                    <input class="form-control" id='key' name='key' value="{{id}} " readonly type="text">
+                </div>
+                <div class="form-group">
+                    <label>Tên</label>
+                    <input class="form-control" value="{{name}}" readonly type="text">
+                </div>
+                <div class="form-group">
                     <p class="help-block">Bạn có muốn tắt VM</p>
-                </div>            
+                </div>
             </div>
             <!-- /.box-body -->
 
             <div class="box-footer">
                 <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="submit" class="btn btn-primary">Hủy</button>
+                <a href="{% url 'server_list' %}" type="button" class="btn btn-primary">Hủy</a>
             </div>
         </form>
     </div>
