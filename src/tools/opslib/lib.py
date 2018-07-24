@@ -136,7 +136,7 @@ class opsbase(object):
         self.conn.compute.delete_server(server)   
 
     def compute_get_console_server(self, name_id = ''):
-        print(self.conn.get_server_console('164c70ac-1097-487b-98fd-769db1470835'))
+        print(self.conn.get_server_console(name_id))
 
     def compute_shutdown_server(self, name_id = ''):
         #openstack.compute.v2._proxy.Proxy.stop_server('164c70ac-1097-487b-98fd-769db1470835')
@@ -156,9 +156,24 @@ class opsbase(object):
                 s_Id = flavor.id
             )
             list_flavors.append(temp_obj)
-        return list_flavors
+        return list_flavors 
 
     def compute_find_flavor(self, name_id):
         print("Find Flavor:")
         flavor = self.conn.compute.find_flavor(name_id)
         return flavor
+
+    def compute_create_flavor(self, name , vcpu = '1', ram = '512', disk = '1'):
+        print("Create flavor:")
+
+        flavor_name = name
+        flavor_vcpu = vcpu
+        flavor_ram = ram
+        flavor_disk = disk
+      
+        server = self.conn.compute.create_flavor(
+            name = flavor_name, 
+            vcpus = flavor_vcpu, 
+            ram = flavor_ram, 
+            disk = flavor_disk
+        )

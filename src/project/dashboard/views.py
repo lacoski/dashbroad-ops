@@ -28,6 +28,7 @@ FORMAT_IMAGE=[
 ]
 def index(request):
     list_object = api_ops.image_list_images()
+    request.session['test'] = 'session from test'
     return redirect('server_list')
 
 def image_list(request):
@@ -120,6 +121,10 @@ def server_list(request, ):
     list_object = api_ops.compute_list_servers
     #notification = request.POST.get('notification','')
     #notification = 'abs'
+    if request.session.get('test'):
+        print(request.session['test'])
+
+    
     return render(request, 'dashboard/server_list.html', {'servers' : list_object}) 
 
 def server_shutdown(request, key = '', name = ''):
