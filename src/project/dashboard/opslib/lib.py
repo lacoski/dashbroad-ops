@@ -2,24 +2,68 @@ import openstack
 import os
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from keystoneauth1.identity import v3
+from keystoneclient.v3 import client
+from keystoneauth1 import session
+from openstack import connection
+
 from .objects import (
     object_images,
     object_flavors,
     object_networks
 )
 
-class opsbase(object):    
+# auth = v3.Password(
+#     auth_url='http://172.16.4.200:5000/v3/',
+#     user_id='659edb24617f4ca785f35dcb9d926f2b',
+#     password='Welcome123',
+#     project_id='91e4db1098934a3e9cc7babf97edf007',
+#     project_domain_name='default',
+#     user_domain_name='default'
+# )
+
+# auth = v3.Token(
+#     auth_url='http://172.16.4.200:5000/v3/',
+#     token='gAAAAABbV8yCCczB2XtntUPLGD3oPDbbo7LTk3vOtIB1_BdU4O3uzj2YMrpWGRbj1RuQUZELj41VezyscDiMLq3mbQzgTWIch76P20BkpzXloE4pWU_lHmLF33KUzh6RrkmeAdjekfUygFcB_d3C0XVE4VVnNNMOgNzNqQbJvfNUFd64ziiHgoY',
+#     project_id='91e4db1098934a3e9cc7babf97edf007',
+#     project_domain_name='default',
+#     # user_domain_name='default'
+# )
+class opsbase(object):
     conn = None
-    def __init__(self):      
-        self.conn = openstack.connect(
-            auth_url='http://172.16.4.200:5000/v3/',
-            project_name='admin',
-            username='admin',
-            password='Welcome123',
-            region_name='RegionOne',
-            user_domain_name='default',
-            project_domain_name='default'
-        )
+    def __init__(self, auth_session = None, session_auth = None):
+        if auth_session is not None:
+            #print(type(auth_session))
+            sess = session.Session(auth=auth_session)
+            self.conn = connection.Connection(        
+                session = sess,
+                identity_api_version='3',
+                region_name='RegionOne',
+                compute_api_version='2',
+                identity_interface='internal',
+                user_domain_name='default',
+                project_domain_name='default'
+            )
+        elif session_auth is not None:
+            self.conn = connection.Connection(        
+                session = session_auth,
+                identity_api_version='3',
+                region_name='RegionOne',
+                compute_api_version='2',
+                identity_interface='internal',
+                user_domain_name='default',
+                project_domain_name='default'
+            )
+        else:        
+            self.conn = openstack.connect(
+                auth_url='http://172.16.4.200:5000/v3/',
+                project_name='admin',
+                username='admin',
+                password='Welcome123',
+                region_name='RegionOne',
+                user_domain_name='default',
+                project_domain_name='default'
+            )
 
 # image service
     def image_list_images(self):
