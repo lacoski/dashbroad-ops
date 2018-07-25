@@ -5,20 +5,35 @@ from django.conf import settings
 def create_user_from_token(request, token)
     return User()
 
-class Auth():
-    token_string = ''
-    user_name = ''
+class Auth_Base(object):
+    auth_url = ''
     region_site = ''
+
     domain_id = ''
     domain_name = ''
+
     project_id = ''
     project_name = ''
 
     def __init__(self):
         pass
 
+class Auth_Password(Auth_Base):   
+    user_name = ''
+    user_password = ''
+
+    def __init__(self):
+        pass
+
+class Auth_Token(Auth_Base):   
+    token_string = ''
+
+    def __init__(self):
+        pass
+
+
 class Token(object):
-    def __init__(self, auth_ref, unscoped_token=None):
+    def __init__(self, auth_password = None, auth_token = None):
         self.user = user
         self.user_domain_id = auth_ref.user_domain_id
         self.user_domain_name = auth_ref.user_domain_name 
