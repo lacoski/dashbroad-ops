@@ -131,6 +131,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 PATH_CACHE = 'imageData/'
 
 AUTHENTICATION_BACKENDS = (
-    'authencation.backends.NoPasswordBackend',
+    'authencation.backend.KeystoneBackend',
     # 'django.contrib.auth.backends.ModelBackend',
 )

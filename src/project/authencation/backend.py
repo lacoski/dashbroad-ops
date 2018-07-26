@@ -1,12 +1,16 @@
 from django.conf import settings
-# from django.contrib.auth.models import User
-from authencation import user.User as auth_user
-
+from django.contrib.auth.models import User
+from .objects import User as auth_user
+from authencation.objects import (
+    Auth_Password,
+    Token
+)
+from django.core import exceptions 
 
 class NoPasswordBackend(object):
     def authenticate(self, username=None, password=None):
         try:
-            user = User.objects.get(username=username)
+            
             if user:
                 return user
         except User.DoesNotExist:
@@ -21,10 +25,27 @@ class NoPasswordBackend(object):
 
 class KeystoneBackend(object):
     def authenticate(self, username=None, password=None):
-        try:
-            user = User.objects.get(username=username)
-            if user:
+        try:            
+            user = None
+            print(username)
+            print(password)
+            passwd = Auth_Password(
+                auth_url = 'http://172.16.4.200:5000/v3/', 
+                region_site = 'RegionOne',         
+                project_domain_name = 'default', 
+                project_id = '91e4db1098934a3e9cc7babf97edf007', 
+                project_name = 'admin',
+                user_name = username, 
+                user_password = password,
+                user_domain_name = 'default'
+            )   
+            token_generate = Token(auth_ref = passwd)
+            if token_generate.is_authenticated():
+                user = auth_user(token_generate)  
                 return user
+            else:
+                raise User.DoesNotExist
+        
         except User.DoesNotExist:
             return None
             
