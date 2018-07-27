@@ -7,6 +7,7 @@ from keystoneauth1.identity import v3
 from keystoneclient.v3 import client
 from keystoneauth1 import session
 from openstack import connection
+from django.contrib.auth.decorators import login_required
 
 import os
 
@@ -40,7 +41,10 @@ FORMAT_IMAGE=[
     'qcow2',
     'raw',
 ]
+
+
 def index(request):
+    
     list_object = api_ops.image_list_images()
     request.session['test'] = 'session from test'
     return redirect('server_list')
@@ -131,16 +135,19 @@ def network_list(request):
     return render(request, 'dashboard/network_list.html', {'networks' : list_object}) 
 
 # vm
-def server_list(request, ):
-    list_object = api_ops.compute_list_servers
-    #notification = request.POST.get('notification','')
-    #notification = 'abs'
-    if request.session.get('test'):
-        print(request.session['test'])
 
-    
-    return render(request, 'dashboard/server_list.html', {'servers' : list_object}) 
+def server_list(request):
+    print('------------- Dashboard')
+    print(type(request.user))
+    print(request.user.is_authenticated)
+    print(request.session.get('token','none'))
 
+    print('------------- Out Dashboard')
+    if request.user.is_authenticated:
+        list_object = api_ops.compute_list_servers
+         
+        return render(request, 'dashboard/server_list.html', {'servers' : list_object}) 
+    return redirect('login_view')
 def server_shutdown(request, key = '', name = ''):
     if request.method == "POST":
         form = StateServerForm(request.POST or None)

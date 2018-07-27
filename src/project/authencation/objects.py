@@ -6,6 +6,8 @@ from keystoneauth1.identity import v3
 from keystoneclient.v3 import client
 from keystoneauth1 import session
 from keystoneauth1.exceptions.http import Unauthorized
+import random
+
 
 from openstack import connection
 
@@ -18,6 +20,39 @@ def set_session_from_user(request, user):
     # Update the user object cached in the request
     request._cached_user = user
     request.user = user
+    # print(user.token)
+    # print(user.id)
+    # print(user.project_id)
+    # print(user.project_name)
+    # print(user.project_domain_name)
+
+def create_user_from_token(request, token):
+    token_auth = Auth_Token(
+        auth_url = 'http://172.16.4.200:5000/v3/', 
+        region_site = 'RegionOne',         
+        project_domain_name = 'default', 
+        project_id = '91e4db1098934a3e9cc7babf97edf007', 
+        project_name = 'admin',
+        token_string = token,
+    )
+    token_generate = Token(auth_ref = token_auth)
+    check_auth_token = token_generate.is_authenticated()
+    print('In create user from token')
+    if check_auth_token:        
+        return User(
+            id = token_generate.get_identity().user_id, 
+            token = token_generate.get_token(),                     
+            username = token_generate.get_identity().username, 
+            domain_id = token_generate.get_identity().user_domain_id, 
+            domain_name = token_generate.get_identity().user_domain_name, 
+            project_id = token_generate.project_id, 
+            project_name = token_generate.project_name,  
+            project_domain_id = token_generate.project_domain_id, 
+            project_domain_name = token_generate.project_domain_name, 
+            password_expires_at = token_generate.get_identity().expires
+        )          
+    return User()
+
 
 class Auth_Base(ABC):
     auth_url = ''
@@ -137,24 +172,34 @@ class User(models.AbstractBaseUser, models.AnonymousUser):
     keystone_user_id = db_models.CharField(primary_key=True, max_length=255)
     USERNAME_FIELD = 'keystone_user_id'
 
-    def __init__(self, token=None):
+    def __init__(self, id = None, token = None, username = None, 
+                domain_id = None, domain_name = None, project_id = None, project_name = None,  
+                project_domain_id = None, project_domain_name = None, password_expires_at = None):
         
-        data_identity = token.get_identity()
-        self.id = data_identity.user_id
-        self.pk = data_identity.user_id
+        #data_identity = token.get_identity()
+        # id_user_random = random.randint(1,999999)
+    
+        self.id = id
+        self.pk = id
         self.token = token
-        self.keystone_user_id = data_identity.user_id
-        self.username = data_identity.username
-        self.domain_id = data_identity.user_domain_id
-        self.domain_name = data_identity.user_domain_name
-        self.project_id = token.project_id
-        self.project_name = token.project_name
-        self.project_domain_id = token.project_domain_id
-        self.project_domain_name = token.project_domain_name
-        self.password_expires_at = data_identity.expires
+        self.keystone_user_id = id
+        self.username = username
+        self.domain_id = domain_id
+        self.domain_name = domain_name
+        self.project_id = project_id
+        self.project_name = project_name
+        self.project_domain_id = project_domain_id
+        self.project_domain_name = project_domain_name
+        self.password_expires_at = password_expires_at
+
+        # Required by AbstractBaseUser
+        self.password = None
 
     def __unicode__(self):
         return self.username
+
+    def __repr__(self):
+        return "<%s: %s>" % (self.__class__.__name__, self.username)
 
     def is_token_expired(self):
         return False 
@@ -186,6 +231,15 @@ class User(models.AbstractBaseUser, models.AnonymousUser):
     def delete(*args, **kwargs):
         # Presume we can't write to Keystone.
         pass
+
+    def has_a_matching_perm(self, perm_list, obj=None):
+        return True
+
+    def has_perms(self, perm_list, obj=None):
+        return True
+
+    class Meta(object):
+        app_label = 'authencation'
 
 
 # def create_user_from_token(request, token)

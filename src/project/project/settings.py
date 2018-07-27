@@ -134,3 +134,7 @@ AUTHENTICATION_BACKENDS = (
     'authencation.backend.KeystoneBackend',
     # 'django.contrib.auth.backends.ModelBackend',
 )
+
+LOGIN_URL='/authen/login/'
+
+AUTH_USER_MODEL='authencation.User'
