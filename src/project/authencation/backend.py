@@ -33,11 +33,11 @@ class KeystoneBackend(object):
         print(username)
         print(password)
         passwd = Auth_Password(
-            auth_url = 'http://172.16.4.200:5000/v3/', 
-            region_site = 'RegionOne',         
-            project_domain_name = 'default', 
-            project_id = '91e4db1098934a3e9cc7babf97edf007', 
-            project_name = 'admin',
+            auth_url = settings.AUTH_URL, 
+            region_site = settings.REGION_SITE,         
+            project_domain_name = settings.PROJECT_DOMAIN_NAME, 
+            project_id = settings.PROJECT_ID, 
+            project_name = settings.PROJECT_NAME,
             user_name = username, 
             user_password = password,
             user_domain_name = 'default'

@@ -6,6 +6,8 @@ from keystoneauth1.identity import v3
 from keystoneclient.v3 import client
 from keystoneauth1 import session
 from keystoneauth1.exceptions.http import Unauthorized
+from django.conf import settings
+
 import random
 
 
@@ -28,11 +30,11 @@ def set_session_from_user(request, user):
 
 def create_user_from_token(request, token):
     token_auth = Auth_Token(
-        auth_url = 'http://172.16.4.200:5000/v3/', 
-        region_site = 'RegionOne',         
-        project_domain_name = 'default', 
-        project_id = '91e4db1098934a3e9cc7babf97edf007', 
-        project_name = 'admin',
+        auth_url = settings.AUTH_URL, 
+        region_site = settings.REGION_SITE,         
+        project_domain_name = settings.PROJECT_DOMAIN_NAME, 
+        project_id = settings.PROJECT_ID, 
+        project_name = settings.PROJECT_NAME,
         token_string = token,
     )
     token_generate = Token(auth_ref = token_auth)
@@ -55,11 +57,11 @@ def create_user_from_token(request, token):
 
 def create_session_from_token(token):
     token_auth = Auth_Token(
-        auth_url = 'http://172.16.4.200:5000/v3/', 
-        region_site = 'RegionOne',         
-        project_domain_name = 'default', 
-        project_id = '91e4db1098934a3e9cc7babf97edf007', 
-        project_name = 'admin',
+        auth_url = settings.AUTH_URL, 
+        region_site = settings.REGION_SITE,         
+        project_domain_name = settings.PROJECT_DOMAIN_NAME, 
+        project_id = settings.PROJECT_ID, 
+        project_name = settings.PROJECT_NAME,
         token_string = token
     )   
     return Token(auth_ref = token_auth)
@@ -162,7 +164,7 @@ class Token(object):
     def is_authenticated(self):
         sess = session.Session(auth=self.session_auth)
         try:
-            resp = sess.get('http://172.16.4.200:5000/v3/', authenticated=True)
+            resp = sess.get(settings.AUTH_URL, authenticated=True)
             return True
         except:
             return False
@@ -174,7 +176,7 @@ class Token(object):
         sess = session.Session(auth=self.session_auth)
         keystone = client.Client(session=sess)        
         return keystone.get_raw_token_from_identity_service(
-            auth_url='http://172.16.4.200:5000/v3/',
+            auth_url=settings.AUTH_URL,
             token = self.get_token()
         )
 

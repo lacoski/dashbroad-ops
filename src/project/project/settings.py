@@ -138,3 +138,10 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_URL='/authen/login/'
 
 AUTH_USER_MODEL='authencation.User'
+
+
+AUTH_URL = 'http://172.16.4.200:5000/v3/'
+REGION_SITE = 'RegionOne'
+PROJECT_DOMAIN_NAME = 'default'
+PROJECT_ID = '91e4db1098934a3e9cc7babf97edf007'
+PROJECT_NAME = 'admin'
