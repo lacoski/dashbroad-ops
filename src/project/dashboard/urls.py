@@ -25,6 +25,12 @@ urlpatterns = [
     path('server_delete/<slug:key>/<slug:name>', views.server_delete, name='server_delete_name'),
 
     path('server_create/', views.server_create, name='server_create'),  
+
+    path('server_get_vnc_console/', views.server_get_vnc_console, name='server_get_vnc_console'),
+    path('server_get_vnc_console/<slug:key>', views.server_get_vnc_console, name='server_get_vnc_console'),
+    path('server_get_vnc_console/<slug:key>/<slug:name>', views.server_get_vnc_console, name='server_get_vnc_console'),
+    #re_path(r'^server_get_vnc_console/(?P<key>[\w-]+)/(?P<name>[\w.]+)', views.server_get_vnc_console, name='server_get_vnc_console'),
+
     # flavor
     path('flavor_list/', views.flavor_list, name='flavor_list'),
     path('flavor_create/', views.flavor_create, name='flavor_create'),

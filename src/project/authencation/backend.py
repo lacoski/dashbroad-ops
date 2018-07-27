@@ -44,8 +44,6 @@ class KeystoneBackend(object):
         )   
         token_generate = Token(auth_ref = passwd)
         check_auth_token = token_generate.is_authenticated()
-        #print(check_auth_token)
-        #print("Out backend")
 
         if check_auth_token:
             print(token_generate.get_identity())
@@ -60,10 +58,7 @@ class KeystoneBackend(object):
                 project_domain_id = token_generate.project_domain_id, 
                 project_domain_name = token_generate.project_domain_name, 
                 password_expires_at = token_generate.get_identity().expires
-            )  
-            print(type(user))
-            print("----------- Out backend")
-
+            )              
             return user
         else:
             return None

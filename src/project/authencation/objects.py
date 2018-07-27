@@ -53,6 +53,16 @@ def create_user_from_token(request, token):
         )          
     return User()
 
+def create_session_from_token(token):
+    token_auth = Auth_Token(
+        auth_url = 'http://172.16.4.200:5000/v3/', 
+        region_site = 'RegionOne',         
+        project_domain_name = 'default', 
+        project_id = '91e4db1098934a3e9cc7babf97edf007', 
+        project_name = 'admin',
+        token_string = token
+    )   
+    return Token(auth_ref = token_auth)
 
 class Auth_Base(ABC):
     auth_url = ''
@@ -154,7 +164,7 @@ class Token(object):
         try:
             resp = sess.get('http://172.16.4.200:5000/v3/', authenticated=True)
             return True
-        except Unauthorized:
+        except:
             return False
 
     def get_identity(self):

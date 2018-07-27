@@ -9,6 +9,9 @@ from keystoneauth1 import session
 from openstack import connection
 from django.contrib.auth.decorators import login_required
 
+from novaclient import client as nova_client
+
+
 import os
 
 
@@ -23,6 +26,10 @@ from dashboard.forms import (
     StateImageForm
 )
 
+from authencation.objects import (    
+    create_session_from_token
+)
+
 # Create your views here.
 
 auth = v3.Password(
@@ -33,7 +40,7 @@ auth = v3.Password(
     project_domain_name='default',
     user_domain_name='default'
 )
-api_ops = opsbase(auth_session = auth)
+api_ops = opsbase()
 
 # image
 
@@ -50,10 +57,26 @@ def index(request):
     return redirect('server_list')
 
 def image_list(request):
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+    else:
+        return redirect('logout_view')
+
     list_object = api_ops.image_list_images()
     return render(request, 'dashboard/image_list.html', {'images' : list_object})
 
 def image_upload(request):
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+    else:
+        return redirect('logout_view')
+
     list_format = FORMAT_IMAGE
     form = CreateImageForm(request.POST or None)
     # if request.method == 'POST':
@@ -79,6 +102,14 @@ def image_upload(request):
     return render(request, 'dashboard/image/upload.html', {'formats':list_format})
 
 def image_delete(request, key = '', name = ''):
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+    else:
+        return redirect('logout_view')
+
     if request.method == "POST":
         form = StateImageForm(request.POST or None)
         if form.is_valid():
@@ -93,10 +124,26 @@ def image_delete(request, key = '', name = ''):
     return render(request, 'dashboard/image/delete.html', {'id':key, 'name': name})
 # flavor
 def flavor_list(request):
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+    else:
+        return redirect('logout_view')
+
     list_object = api_ops.compute_list_flavors
     return render(request, 'dashboard/flavor_list.html', {'flavors' : list_object})
 
 def flavor_delete(request, key = '', name = ''):
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+    else:
+        return redirect('logout_view')
+
     if request.method == "POST":
         form = StateFlavorForm(request.POST or None)
         if form.is_valid():
@@ -109,6 +156,14 @@ def flavor_delete(request, key = '', name = ''):
     return render(request, 'dashboard/flavor/delete.html', {'id':key, 'name': name})
 
 def flavor_create(request):
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+    else:
+        return redirect('logout_view')
+
     if request.method == "POST":
         form = CreateFlavorForm(request.POST or None)
         if form.is_valid():
@@ -131,24 +186,40 @@ def flavor_create(request):
 
 # network
 def network_list(request):
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+    else:
+        return redirect('logout_view')
+        
     list_object = api_ops.network_list_networks
     return render(request, 'dashboard/network_list.html', {'networks' : list_object}) 
 
 # vm
 
 def server_list(request):
-    print('------------- Dashboard')
-    print(type(request.user))
-    print(request.user.is_authenticated)
-    print(request.session.get('token','none'))
-
-    print('------------- Out Dashboard')
-    if request.user.is_authenticated:
-        list_object = api_ops.compute_list_servers
-         
+    #print(request.session.get('token','none'))
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        #print(session_created.is_authenticated())
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+        list_object = api_ops.compute_list_servers         
         return render(request, 'dashboard/server_list.html', {'servers' : list_object}) 
     return redirect('login_view')
+
 def server_shutdown(request, key = '', name = ''):
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+    else:
+        return redirect('logout_view')
+
     if request.method == "POST":
         form = StateServerForm(request.POST or None)
         if form.is_valid():
@@ -162,6 +233,14 @@ def server_shutdown(request, key = '', name = ''):
     return render(request, 'dashboard/server/shutdown.html', {'id':key, 'name': name})
 
 def server_startup(request, key = '', name = ''):
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+    else:
+        return redirect('logout_view')
+
     if request.method == "POST":
         form = StateServerForm(request.POST or None)
         if form.is_valid():
@@ -173,10 +252,39 @@ def server_startup(request, key = '', name = ''):
     return render(request, 'dashboard/server/startup.html', {'id':key, 'name': name})
 
 def server_get_console(request, key = '', name = ''):  
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+    else:
+        return redirect('logout_view')
+
     server_console = api_ops.compute_get_console_server(key)
     return render(request, 'dashboard/server/get_console.html', {'id':key, 'name': name, 'server_console': server_console})
 
+def server_get_vnc_console(request, key = '', name = ''):
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))        
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+        sess = session.Session(auth = session_created.session_auth)
+        nova_session = nova_client.Client(version = 2, session = sess)
+        url = nova_session.servers.get_vnc_console(key, 'novnc')['console']['url']
+        return redirect(url)        
+    else:
+        return redirect('logout_view')
+
 def server_delete(request, key = '', name = ''):
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+    else:
+        return redirect('logout_view')
+
     if request.method == "POST":
         form = StateServerForm(request.POST or None)
         if form.is_valid():
@@ -189,6 +297,14 @@ def server_delete(request, key = '', name = ''):
     return render(request, 'dashboard/server/delete.html', {'id':key, 'name': name})
 
 def server_create(request, key = '', name = ''):
+    if request.session.get('token','none') != 'none':
+        session_created = create_session_from_token(request.session.get('token','none'))
+        if not session_created.is_authenticated():
+            return redirect('logout_view')
+        api_ops = opsbase(auth_session = session_created.session_auth)
+    else:
+        return redirect('logout_view')
+
     if request.method == "POST":
         form = CreateServerForm(request.POST or None)
         if form.is_valid():

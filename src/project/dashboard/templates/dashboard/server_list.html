@@ -76,8 +76,8 @@
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
                                     <li>
-                                        <a href="{% url 'server_get_console' %}{{obj.id}}/{{obj.name}}">Get console</a>
-                                        <a href="#">Console</a>
+                                        <a target="_blank" href="{% url 'server_get_console' %}{{obj.id}}/{{obj.name}}">Get console</a>
+                                        <a target="_blank" href="{% url 'server_get_vnc_console' %}{{obj.id}}/{{obj.name}}">Console</a>
                                         <a href="{% url 'server_startup' %}{{obj.id}}/{{obj.name}}">Bật</a>
                                         <a href="{% url 'server_shutdown' %}{{obj.id}}/{{obj.name}}">Tắt</a>
                                         <a href="{% url 'server_delete' %}{{obj.id}}/{{obj.name}}">Xóa</a>

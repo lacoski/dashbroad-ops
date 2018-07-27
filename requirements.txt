@@ -1,3 +1,4 @@
 python-keystoneclient
 openstacksdk
+python-novaclient
 django
