@@ -129,7 +129,7 @@ class opsbase(object):
             name=vm_name, image_id=image.id, flavor_id=flavor.id,
             networks=[{"uuid": network.id}])
 
-        server = self.conn.compute.wait_for_server(server)
+        #server = self.conn.compute.wait_for_server(server)
 
     def compute_delete_server(self, name_id):
         print("Delete Server:")
@@ -141,11 +141,11 @@ class opsbase(object):
         list_servers = []
         for server in self.conn.compute.servers():
             #print(server)
-            name_image = self.image_find_image(server.image['id'])
-            if name_image is None:
-                server.image['name_image'] = 'Image has deleted'
-            else:
-                server.image['name_image'] = name_image.name
+            #name_image = self.image_find_image(server.image['id'])
+            #if name_image is None:
+            #    server.image['name_image'] = 'Image has deleted'
+            #else:
+            #    server.image['name_image'] = name_image.name
             
             name_flavor = self.compute_find_flavor(server.flavor['id'])
             if name_flavor is None:
