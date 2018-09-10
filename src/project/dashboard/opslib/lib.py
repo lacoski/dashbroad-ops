@@ -129,7 +129,7 @@ class opsbase(object):
             name=vm_name, image_id=image.id, flavor_id=flavor.id,
             networks=[{"uuid": network.id}])
 
-        #server = self.conn.compute.wait_for_server(server)
+        #server = self.conn.compute.wait_for_server(server)##
 
     def compute_delete_server(self, name_id):
         print("Delete Server:")
