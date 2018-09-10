@@ -1,4 +1,4 @@
-python-keystoneclient
-openstacksdk
-python-novaclient
-django
+python-keystoneclient==3.17.0
+openstacksdk==0.16.0
+python-novaclient==11.0.0
+django==2.0.7
